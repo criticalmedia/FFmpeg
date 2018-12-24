@@ -3340,6 +3340,7 @@ udp_protocol_select="network"
 udplite_protocol_select="network"
 unix_protocol_deps="sys_un_h"
 unix_protocol_select="network"
+zmq_protocol_deps="libzmq"
 
 # external library protocols
 librtmp_protocol_deps="librtmp"
