@@ -235,6 +235,8 @@ static int segment_start(AVFormatContext *s, int write_header)
     SegmentContext *seg = s->priv_data;
     AVFormatContext *oc = seg->avf;
     int err = 0;
+    char service_name[255] = "";
+    snprintf(service_name, sizeof(service_name), "%ld", av_gettime());
 
     if (write_header) {
         avformat_free_context(oc);
@@ -265,6 +267,7 @@ static int segment_start(AVFormatContext *s, int write_header)
         AVDictionary *options = NULL;
         av_dict_copy(&options, seg->format_options, 0);
         av_dict_set(&options, "fflags", "-autobsf", 0);
+        av_dict_set(&oc->metadata, "service_name", service_name, 0);
         err = avformat_write_header(oc, &options);
         av_dict_free(&options);
         if (err < 0)
@@ -650,6 +653,8 @@ static int seg_init(AVFormatContext *s)
     AVDictionary *options = NULL;
     int ret;
     int i;
+    char service_name[255] = "";
+    snprintf(service_name, sizeof(service_name), "%ld", av_gettime());
 
     seg->segment_count = 0;
     if (!seg->write_header_trailer)
@@ -748,6 +753,7 @@ static int seg_init(AVFormatContext *s)
     if ((ret = set_segment_filename(s)) < 0)
         return ret;
     oc = seg->avf;
+    av_dict_set(&oc->metadata, "service_name", service_name, 0);
 
     if (seg->write_header_trailer) {
         if ((ret = s->io_open(s, &oc->pb,
